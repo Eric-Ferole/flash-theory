@@ -1,0 +1,126 @@
+@use 'variables' as *;
+
+.flashcard-scene {
+  width: $card-width;
+  height: $card-height;
+  perspective: 1200px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.flashcard {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform $transition-flip;
+  border-radius: $radius-card;
+
+  &--flipped {
+    transform: rotateY(180deg);
+  }
+
+  // Swipe tilt applied via inline style
+}
+
+.flashcard__face {
+  position: absolute;
+  inset: 0;
+  border-radius: $radius-card;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 28px;
+  overflow: hidden;
+
+  // Overlay for swipe feedback (red/green tint)
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: $radius-card;
+    opacity: 0;
+    transition: opacity $transition-fast;
+    pointer-events: none;
+  }
+}
+
+.flashcard__face--front {
+  background: $bg-card;
+  border: 1.5px solid $border;
+
+  &.swipe-left::after  { background: $accent-red;   opacity: 0.25; }
+  &.swipe-right::after { background: $accent-green;  opacity: 0.25; }
+}
+
+.flashcard__face--back {
+  background: $bg-surface;
+  border: 1.5px solid rgba($accent, 0.3);
+  transform: rotateY(180deg);
+
+  &.swipe-left::after  { background: $accent-red;   opacity: 0.25; }
+  &.swipe-right::after { background: $accent-green;  opacity: 0.25; }
+}
+
+.flashcard__scale {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 24px;
+}
+
+.flashcard__note {
+  font-size: 4.5rem;
+  font-weight: 800;
+  color: $text-primary;
+  line-height: 1;
+  margin-bottom: 20px;
+}
+
+.flashcard__hint {
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin-top: auto;
+}
+
+.flashcard__roman {
+  font-size: 4rem;
+  font-weight: 800;
+  color: $accent;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.flashcard__degree-name {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: $text-primary;
+  margin-bottom: 8px;
+}
+
+.flashcard__scale-back {
+  font-size: 0.8rem;
+  color: $text-muted;
+  margin-top: 16px;
+}
+
+.flashcard__swipe-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 3rem;
+  opacity: 0;
+  transition: opacity $transition-fast;
+  pointer-events: none;
+
+  &--left  { left: 20px; }
+  &--right { right: 20px; }
+
+  &.visible { opacity: 1; }
+}

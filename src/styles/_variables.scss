@@ -1,0 +1,28 @@
+// Colors
+$bg:            #1a1a2e;
+$bg-card:       #16213e;
+$bg-surface:    #0f3460;
+$accent:        #e94560;
+$accent-green:  #2ecc71;
+$accent-red:    #e74c3c;
+$text-primary:  #eaeaea;
+$text-muted:    #8892a4;
+$border:        rgba(255, 255, 255, 0.08);
+
+// Typography
+$font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+// Spacing
+$radius-sm:   8px;
+$radius-md:   16px;
+$radius-lg:   24px;
+$radius-card: 20px;
+
+// Card
+$card-width:   min(340px, 90vw);
+$card-height:  min(480px, 65vh);
+
+// Transitions
+$transition-fast:   0.15s ease;
+$transition-normal: 0.3s ease;
+$transition-flip:   0.5s ease;
