@@ -110,6 +110,62 @@
   margin-top: 16px;
 }
 
+// ── Spell card front ─────────────────────────────────────────────────────────
+
+.flashcard__scale-name {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: $text-primary;
+  line-height: 1.1;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.flashcard__scale-type {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: $text-muted;
+  margin-bottom: 4px;
+}
+
+// ── Spell card back ───────────────────────────────────────────────────────────
+
+.flashcard__notes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.flashcard__note-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: $radius-sm;
+  padding: 8px 10px;
+  min-width: 48px;
+
+  .chip-note {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $text-primary;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .chip-degree {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $accent;
+    line-height: 1;
+  }
+}
+
 .flashcard__swipe-icon {
   position: absolute;
   top: 50%;

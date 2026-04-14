@@ -39,11 +39,18 @@ export default function ResultScreen({ correct, wrong, total, onRestart, onSetti
           <div className="result__missed-list">
             {wrong.map(card => (
               <div key={card.id} className="result__missed-item">
-                <span>
-                  <span className="note">{card.note}</span>
-                  <span className="scale"> — {card.scaleLabel}</span>
-                </span>
-                <span className="degree">{card.roman}</span>
+                {card.type === 'spell' ? (
+                  <span className="note">{card.scaleLabel}</span>
+                ) : (
+                  <span>
+                    <span className="note">{card.note}</span>
+                    <span className="scale"> — {card.scaleLabel}</span>
+                  </span>
+                )}
+                {card.type === 'spell'
+                  ? <span className="degree">{card.notes.map(n => n.note).join(' · ')}</span>
+                  : <span className="degree">{card.roman}</span>
+                }
               </div>
             ))}
           </div>

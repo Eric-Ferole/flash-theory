@@ -1,20 +1,15 @@
 import { useState, useRef } from 'react'
 
-const SWIPE_THRESHOLD = 80   // px to trigger a swipe decision
-const SWIPE_MAX      = 150  // px for full tint
+const SWIPE_THRESHOLD = 80
+const SWIPE_MAX       = 150
 
 export default function FlashCard({ card, onSwipe }) {
-  const [isFlipped, setIsFlipped]       = useState(false)
-  const [dragX, setDragX]               = useState(0)
-  const [isDragging, setIsDragging]     = useState(false)
-  const startXRef                        = useRef(null)
+  const [isFlipped, setIsFlipped]   = useState(false)
+  const [dragX, setDragX]           = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
+  const startXRef                   = useRef(null)
 
-  // Reset card when card prop changes
-  const prevCardId = useRef(card.id)
-  if (card.id !== prevCardId.current) {
-    prevCardId.current = card.id
-    // State reset happens on re-render via key prop in parent
-  }
+  const isSpell = card.type === 'spell'
 
   // ── Touch handlers ──────────────────────────────────────────
   function handleTouchStart(e) {
@@ -24,24 +19,11 @@ export default function FlashCard({ card, onSwipe }) {
 
   function handleTouchMove(e) {
     if (startXRef.current === null) return
-    const dx = e.touches[0].clientX - startXRef.current
-    setDragX(dx)
+    setDragX(e.touches[0].clientX - startXRef.current)
   }
 
   function handleTouchEnd() {
-    if (!isFlipped) {
-      // Only flip, no swipe decision yet
-      if (Math.abs(dragX) < 10) setIsFlipped(true)
-    } else {
-      if (dragX > SWIPE_THRESHOLD) {
-        onSwipe('correct')
-      } else if (dragX < -SWIPE_THRESHOLD) {
-        onSwipe('wrong')
-      }
-    }
-    setDragX(0)
-    setIsDragging(false)
-    startXRef.current = null
+    commitGesture()
   }
 
   // ── Mouse handlers (desktop) ─────────────────────────────────
@@ -52,19 +34,19 @@ export default function FlashCard({ card, onSwipe }) {
 
   function handleMouseMove(e) {
     if (!isDragging || startXRef.current === null) return
-    const dx = e.clientX - startXRef.current
-    setDragX(dx)
+    setDragX(e.clientX - startXRef.current)
   }
 
   function handleMouseUp() {
+    commitGesture()
+  }
+
+  function commitGesture() {
     if (!isFlipped) {
       if (Math.abs(dragX) < 10) setIsFlipped(true)
     } else {
-      if (dragX > SWIPE_THRESHOLD) {
-        onSwipe('correct')
-      } else if (dragX < -SWIPE_THRESHOLD) {
-        onSwipe('wrong')
-      }
+      if      (dragX > SWIPE_THRESHOLD)  onSwipe('correct')
+      else if (dragX < -SWIPE_THRESHOLD) onSwipe('wrong')
     }
     setDragX(0)
     setIsDragging(false)
@@ -72,7 +54,7 @@ export default function FlashCard({ card, onSwipe }) {
   }
 
   // ── Visual feedback ──────────────────────────────────────────
-  const tilt    = isFlipped ? (dragX / SWIPE_MAX) * 20 : 0
+  const tilt       = isFlipped ? (dragX / SWIPE_MAX) * 20 : 0
   const translateX = isFlipped ? dragX * 0.4 : 0
   const tintRatio  = Math.min(Math.abs(dragX) / SWIPE_MAX, 1)
 
@@ -90,6 +72,42 @@ export default function FlashCard({ card, onSwipe }) {
     transition: isDragging ? 'none' : undefined,
   }
 
+  // ── Front content ────────────────────────────────────────────
+  const Front = isSpell ? (
+    <>
+      <p className="flashcard__scale-type">Spell the scale</p>
+      <p className="flashcard__scale-name">{card.scaleLabel}</p>
+      <p className="flashcard__hint">Tap to reveal all notes</p>
+    </>
+  ) : (
+    <>
+      <p className="flashcard__scale">{card.scaleLabel}</p>
+      <p className="flashcard__note">{card.note}</p>
+      <p className="flashcard__hint">Tap to reveal degree</p>
+    </>
+  )
+
+  // ── Back content ─────────────────────────────────────────────
+  const Back = isSpell ? (
+    <>
+      <p className="flashcard__scale" style={{ marginBottom: 20 }}>{card.scaleLabel}</p>
+      <div className="flashcard__notes-grid">
+        {card.notes.map(({ note, roman }) => (
+          <div key={roman} className="flashcard__note-chip">
+            <span className="chip-note">{note}</span>
+            <span className="chip-degree">{roman}</span>
+          </div>
+        ))}
+      </div>
+    </>
+  ) : (
+    <>
+      <p className="flashcard__roman">{card.roman}</p>
+      <p className="flashcard__degree-name">{card.degreeName}</p>
+      <p className="flashcard__scale-back">{card.scaleLabel} · {card.note}</p>
+    </>
+  )
+
   return (
     <div
       className="flashcard-scene"
@@ -106,26 +124,20 @@ export default function FlashCard({ card, onSwipe }) {
         <div className={faceClass('flashcard__face flashcard__face--front')}>
           <span className="flashcard__swipe-icon flashcard__swipe-icon--left">✗</span>
           <span className="flashcard__swipe-icon flashcard__swipe-icon--right">✓</span>
-
-          <p className="flashcard__scale">{card.scaleLabel}</p>
-          <p className="flashcard__note">{card.note}</p>
-          <p className="flashcard__hint">Tap to reveal degree</p>
+          {Front}
         </div>
 
         {/* BACK */}
         <div className={faceClass('flashcard__face flashcard__face--back')}>
           <span
-            className={`flashcard__swipe-icon flashcard__swipe-icon--left${dragX < -SWIPE_THRESHOLD ? ' visible' : ''}`}
+            className="flashcard__swipe-icon flashcard__swipe-icon--left"
             style={{ opacity: dragX < 0 ? tintRatio : 0 }}
           >✗</span>
           <span
-            className={`flashcard__swipe-icon flashcard__swipe-icon--right${dragX > SWIPE_THRESHOLD ? ' visible' : ''}`}
+            className="flashcard__swipe-icon flashcard__swipe-icon--right"
             style={{ opacity: dragX > 0 ? tintRatio : 0 }}
           >✓</span>
-
-          <p className="flashcard__roman">{card.roman}</p>
-          <p className="flashcard__degree-name">{card.degreeName}</p>
-          <p className="flashcard__scale-back">{card.scaleLabel} · {card.note}</p>
+          {Back}
         </div>
       </div>
     </div>

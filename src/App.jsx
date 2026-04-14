@@ -8,7 +8,7 @@ export default function App() {
   const [cards, setCards]     = useState([])
   const [results, setResults] = useState(null)
 
-  function handleStart(generatedCards) {
+  function handleStart(generatedCards, gameMode) {
     setCards(generatedCards)
     setResults(null)
     setScreen('quiz')
